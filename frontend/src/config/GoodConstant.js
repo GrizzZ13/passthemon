@@ -1,0 +1,12 @@
+export const CLOTHES=1; //服饰装扮
+export const DRINKS_AND_SNACKS=2;
+export const ELECTRONIC_PRODUCTS=3;
+export const GAME_PROPS=4;
+export const PAPER=5;
+export const DAILY_USE=6;
+export const OTHER_KINDS=7;
+export const BRAND_NEW=-1;
+export const ALMOST_BRAND_NEW=-2;
+export const MILD_WEAR=-3;
+export const MODERATE_WEAR=-4;
+export const OTHER_WEAR=-5;

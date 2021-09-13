@@ -1,0 +1,248 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: GoodsController</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.backend.passthemon.controller</a> ]
+</div>
+
+<h1>Coverage Summary for Class: GoodsController (com.backend.passthemon.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GoodsController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (67/ 67)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package com.backend.passthemon.controller;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import com.alibaba.fastjson.JSONObject;
+<i>4</i>&nbsp;import com.backend.passthemon.annotation.RequestConsistent;
+<i>5</i>&nbsp;import com.backend.passthemon.dto.GoodInfoDto;
+<i>6</i>&nbsp;import com.backend.passthemon.dto.GoodsDto;
+<i>7</i>&nbsp;import com.backend.passthemon.dto.GoodsWanterDto;
+<i>8</i>&nbsp;import com.backend.passthemon.entity.Goods;
+<i>9</i>&nbsp;import com.backend.passthemon.entity.Wants;
+<i>10</i>&nbsp;import com.backend.passthemon.producer.GoodsProducer;
+<i>11</i>&nbsp;import com.backend.passthemon.service.*;
+<i>12</i>&nbsp;import com.backend.passthemon.utils.msgutils.Msg;
+<i>13</i>&nbsp;import com.backend.passthemon.utils.msgutils.MsgUtil;
+<i>14</i>&nbsp;import lombok.extern.slf4j.Slf4j;
+<i>15</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>16</i>&nbsp;import org.springframework.web.bind.annotation.*;
+<i>17</i>&nbsp;import org.springframework.web.context.request.RequestContextHolder;
+<i>18</i>&nbsp;import org.springframework.web.context.request.ServletRequestAttributes;
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;import javax.servlet.http.HttpServletRequest;
+<i>21</i>&nbsp;import java.util.*;
+<i>22</i>&nbsp;
+<b class="fc"><i>23</i>&nbsp;@Slf4j</b>
+<i>24</i>&nbsp;@RestController
+<i>25</i>&nbsp;@CrossOrigin
+<b class="fc"><i>26</i>&nbsp;public class GoodsController {</b>
+<i>27</i>&nbsp;    @Autowired
+<i>28</i>&nbsp;    private GoodsService goodsService;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;    @Autowired
+<i>31</i>&nbsp;    private HistoryService historyService;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;    @Autowired
+<i>34</i>&nbsp;    private  UserService userService;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    @Autowired
+<i>37</i>&nbsp;    private ImagesService imagesService;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    @Autowired
+<i>40</i>&nbsp;    private GoodsProducer goodsProducer;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;    @RequestMapping(&quot;/goods/listGoodsByPage&quot;)
+<i>43</i>&nbsp;    public Msg listGoodsByPages(
+<i>44</i>&nbsp;            @RequestParam(value = &quot;fetchPage&quot;) Integer fetchPage,
+<i>45</i>&nbsp;            @RequestParam(value = &quot;userId&quot;) Integer userId,
+<i>46</i>&nbsp;            @RequestParam(value = &quot;category&quot;) Integer category,
+<i>47</i>&nbsp;            @RequestParam(value = &quot;attrition&quot;) Integer attrition
+<i>48</i>&nbsp;    ){
+<b class="fc"><i>49</i>&nbsp;        log.info(&quot;[GoodsController]&quot;);</b>
+<b class="fc"><i>50</i>&nbsp;        System.out.println(&quot;fetchPage&quot;);</b>
+<b class="fc"><i>51</i>&nbsp;        System.out.println(fetchPage);</b>
+<b class="fc"><i>52</i>&nbsp;        JSONObject jsonObject = goodsService.listGoodsByPages(fetchPage, userId, category, attrition);</b>
+<b class="fc"><i>53</i>&nbsp;        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();</b>
+<b class="fc"><i>54</i>&nbsp;        Msg msg = MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG, jsonObject, request);</b>
+<i>55</i>&nbsp;
+<b class="fc"><i>56</i>&nbsp;        return msg;</b>
+<i>57</i>&nbsp;    }
+<i>58</i>&nbsp;    @RequestMapping(&quot;/goods/listMyGoodsByPage&quot;)
+<i>59</i>&nbsp;    public Msg listMyGoodsByPages(
+<i>60</i>&nbsp;            @RequestParam(value = &quot;fetchPage&quot;) Integer fetchPage,
+<i>61</i>&nbsp;            @RequestParam(value = &quot;userId&quot;) Integer userId
+<i>62</i>&nbsp;    ){
+<b class="fc"><i>63</i>&nbsp;        log.info(&quot;[GoodsController]&quot;);</b>
+<b class="fc"><i>64</i>&nbsp;        System.out.println(userId);</b>
+<b class="fc"><i>65</i>&nbsp;        List&lt;GoodsDto&gt; result = goodsService.listMyGoodsByPages(fetchPage, userId);</b>
+<b class="fc"><i>66</i>&nbsp;        JSONObject jsonObject = new JSONObject();</b>
+<b class="fc"><i>67</i>&nbsp;        jsonObject.put(&quot;list&quot;, result);</b>
+<b class="fc"><i>68</i>&nbsp;        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();</b>
+<b class="fc"><i>69</i>&nbsp;        Msg msg = MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG, jsonObject, request);</b>
+<i>70</i>&nbsp;
+<b class="fc"><i>71</i>&nbsp;        return msg;</b>
+<i>72</i>&nbsp;    }
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    @RequestMapping(&quot;/goods/findGoodsById&quot;)
+<i>75</i>&nbsp;    public Msg findGoodsById(
+<i>76</i>&nbsp;            @RequestParam(&quot;goodsId&quot;) Integer goodsId,
+<i>77</i>&nbsp;            @RequestParam(&quot;userId&quot;) Integer userId
+<i>78</i>&nbsp;    ){
+<b class="fc"><i>79</i>&nbsp;        historyService.addHistory(userId,goodsId);</b>
+<b class="fc"><i>80</i>&nbsp;        Goods result = goodsService.findGoodsById(goodsId);</b>
+<i>81</i>&nbsp;
+<b class="fc"><i>82</i>&nbsp;        JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(result));</b>
+<b class="fc"><i>83</i>&nbsp;        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();</b>
+<b class="fc"><i>84</i>&nbsp;        Msg msg = MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG, jsonObject, request);</b>
+<i>85</i>&nbsp;
+<b class="fc"><i>86</i>&nbsp;        return msg;</b>
+<i>87</i>&nbsp;    }
+<i>88</i>&nbsp;    @RequestMapping(&quot;/goods/getGoodsById&quot;)
+<i>89</i>&nbsp;    public Msg getGoodsById(@RequestParam(&quot;goodId&quot;) Integer goodsId){
+<b class="fc"><i>90</i>&nbsp;        Goods result = goodsService.findGoodsById(goodsId);</b>
+<b class="fc"><i>91</i>&nbsp;        result.setImagesList(imagesService.getAllImgByGoodsId(goodsId));</b>
+<b class="fc"><i>92</i>&nbsp;        GoodInfoDto goodInfoDto=new GoodInfoDto(result);</b>
+<b class="fc"><i>93</i>&nbsp;        JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(goodInfoDto));</b>
+<b class="fc"><i>94</i>&nbsp;        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();</b>
+<b class="fc"><i>95</i>&nbsp;        Msg msg = MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG, jsonObject, request);</b>
+<b class="fc"><i>96</i>&nbsp;        return msg;</b>
+<i>97</i>&nbsp;    }
+<i>98</i>&nbsp;    @RequestMapping(&quot;/goods/addGood&quot;)
+<i>99</i>&nbsp;    public Msg addGood(@RequestBody JSONObject param){
+<b class="fc"><i>100</i>&nbsp;        goodsProducer.sendGoods(param);</b>
+<b class="fc"><i>101</i>&nbsp;        JSONObject jsonObject = new JSONObject();</b>
+<b class="fc"><i>102</i>&nbsp;        jsonObject.put(&quot;flag&quot;,true);</b>
+<b class="fc"><i>103</i>&nbsp;        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();</b>
+<b class="fc"><i>104</i>&nbsp;        Msg msg = MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG,jsonObject, request);</b>
+<b class="fc"><i>105</i>&nbsp;        return msg;</b>
+<i>106</i>&nbsp;    }
+<i>107</i>&nbsp;    @RequestMapping(&quot;/goods/removeGoods&quot;)
+<i>108</i>&nbsp;    @RequestConsistent(identityConsistent = true)
+<i>109</i>&nbsp;    public Msg removeGoods(@RequestParam(&quot;goodsId&quot;) Integer goodsId){
+<b class="fc"><i>110</i>&nbsp;        goodsService.removeGoods(goodsId);</b>
+<b class="fc"><i>111</i>&nbsp;        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();</b>
+<b class="fc"><i>112</i>&nbsp;        Msg msg = MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG,null, request);</b>
+<b class="fc"><i>113</i>&nbsp;        return msg;</b>
+<i>114</i>&nbsp;    }
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;    @RequestMapping(&quot;/goods/searchGoods&quot;)
+<i>117</i>&nbsp;    public Msg searchGoods(
+<i>118</i>&nbsp;            @RequestParam(&quot;search&quot;) String search,
+<i>119</i>&nbsp;            @RequestParam(&quot;fetchPage&quot;) Integer fetchPage
+<i>120</i>&nbsp;    ){
+<b class="fc"><i>121</i>&nbsp;        List&lt;Goods&gt; goodsList = goodsService.searchGoods(search, fetchPage);</b>
+<b class="fc"><i>122</i>&nbsp;        List&lt;GoodsDto&gt; result = GoodsDto.convert(goodsList);</b>
+<b class="fc"><i>123</i>&nbsp;        JSONObject jsonObject = new JSONObject();</b>
+<b class="fc"><i>124</i>&nbsp;        jsonObject.put(&quot;list&quot;, result);</b>
+<b class="fc"><i>125</i>&nbsp;        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();</b>
+<b class="fc"><i>126</i>&nbsp;        Msg msg = MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG, jsonObject, request);</b>
+<b class="fc"><i>127</i>&nbsp;        System.out.println(msg);</b>
+<b class="fc"><i>128</i>&nbsp;        return msg;</b>
+<i>129</i>&nbsp;    }
+<i>130</i>&nbsp;    @RequestMapping(&quot;/goods/editGood&quot;)
+<i>131</i>&nbsp;    public Msg editGood(@RequestBody JSONObject param){
+<b class="fc"><i>132</i>&nbsp;        goodsProducer.EditGoods(param);</b>
+<b class="fc"><i>133</i>&nbsp;        JSONObject jsonObject = new JSONObject();</b>
+<b class="fc"><i>134</i>&nbsp;        jsonObject.put(&quot;flag&quot;,true);</b>
+<b class="fc"><i>135</i>&nbsp;        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();</b>
+<b class="fc"><i>136</i>&nbsp;        Msg msg = MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG,jsonObject, request);</b>
+<i>137</i>&nbsp;
+<b class="fc"><i>138</i>&nbsp;        return msg;</b>
+<i>139</i>&nbsp;    }
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;    @RequestMapping(&quot;/goods/getWanter&quot;)
+<i>142</i>&nbsp;    public Msg getWanter(@RequestParam(&quot;goodsId&quot;) Integer goodsId){
+<b class="fc"><i>143</i>&nbsp;        List&lt;Wants&gt; wantsList = goodsService.findGoodsById(goodsId).getWantsList();</b>
+<b class="fc"><i>144</i>&nbsp;        List&lt;GoodsWanterDto&gt; result = GoodsWanterDto.convert(wantsList);</b>
+<b class="fc"><i>145</i>&nbsp;        JSONObject jsonObject = new JSONObject();</b>
+<b class="fc"><i>146</i>&nbsp;        jsonObject.put(&quot;list&quot;, result);</b>
+<b class="fc"><i>147</i>&nbsp;        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();</b>
+<b class="fc"><i>148</i>&nbsp;        Msg msg = MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG, jsonObject, request);</b>
+<i>149</i>&nbsp;
+<b class="fc"><i>150</i>&nbsp;        return msg;</b>
+<i>151</i>&nbsp;    }
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;    @RequestMapping(&quot;/goods/getMaxGoodsPage&quot;)
+<i>154</i>&nbsp;    public Msg getMaxGoodsPage(
+<i>155</i>&nbsp;            @RequestParam(value = &quot;category&quot;) Integer category,
+<i>156</i>&nbsp;            @RequestParam(value = &quot;attrition&quot;) Integer attrition){
+<b class="fc"><i>157</i>&nbsp;        int maxPage = goodsService.getMaxGoodsPage(category, attrition);</b>
+<b class="fc"><i>158</i>&nbsp;        JSONObject jsonObject = new JSONObject();</b>
+<b class="fc"><i>159</i>&nbsp;        jsonObject.put(&quot;data&quot;, maxPage);</b>
+<b class="fc"><i>160</i>&nbsp;        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();</b>
+<b class="fc"><i>161</i>&nbsp;        Msg msg = MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG,jsonObject, request);</b>
+<i>162</i>&nbsp;
+<b class="fc"><i>163</i>&nbsp;        return msg;</b>
+<i>164</i>&nbsp;    }
+<i>165</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-09-11 15:21</div>
+</div>
+</body>
+</html>

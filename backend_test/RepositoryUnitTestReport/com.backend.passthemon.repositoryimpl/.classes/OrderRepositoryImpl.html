@@ -1,0 +1,230 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: OrderRepositoryImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.backend.passthemon.repositoryimpl</a> ]
+</div>
+
+<h1>Coverage Summary for Class: OrderRepositoryImpl (com.backend.passthemon.repositoryimpl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OrderRepositoryImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (66/ 66)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package com.backend.passthemon.repositoryimpl;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import com.backend.passthemon.constant.GoodsConstant;
+<i>4</i>&nbsp;import com.backend.passthemon.constant.OrderConstant;
+<i>5</i>&nbsp;import com.backend.passthemon.dao.GoodsDao;
+<i>6</i>&nbsp;import com.backend.passthemon.dao.UserDao;
+<i>7</i>&nbsp;import com.backend.passthemon.dao.ImagesDao;
+<i>8</i>&nbsp;import com.backend.passthemon.dao.OrderDao;
+<i>9</i>&nbsp;import com.backend.passthemon.dao.WantsDao;
+<i>10</i>&nbsp;import com.backend.passthemon.dto.OrderDto;
+<i>11</i>&nbsp;import com.backend.passthemon.entity.Goods;
+<i>12</i>&nbsp;import com.backend.passthemon.entity.Order;
+<i>13</i>&nbsp;import com.backend.passthemon.entity.User;
+<i>14</i>&nbsp;import com.backend.passthemon.entity.Wants;
+<i>15</i>&nbsp;import com.backend.passthemon.repository.OrderRepository;
+<i>16</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>17</i>&nbsp;import org.springframework.data.domain.PageRequest;
+<i>18</i>&nbsp;import org.springframework.data.domain.Pageable;
+<i>19</i>&nbsp;import org.springframework.data.domain.Sort;
+<i>20</i>&nbsp;import org.springframework.stereotype.Repository;
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;import java.math.BigDecimal;
+<i>23</i>&nbsp;import java.sql.Timestamp;
+<i>24</i>&nbsp;import java.util.ArrayList;
+<i>25</i>&nbsp;import java.util.List;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;@Repository
+<b class="fc"><i>28</i>&nbsp;public class OrderRepositoryImpl implements OrderRepository {</b>
+<i>29</i>&nbsp;    @Autowired
+<i>30</i>&nbsp;    OrderDao orderDao;
+<i>31</i>&nbsp;    @Autowired
+<i>32</i>&nbsp;    GoodsDao goodsDao;
+<i>33</i>&nbsp;    @Autowired
+<i>34</i>&nbsp;    WantsDao wantsDao;
+<i>35</i>&nbsp;    @Autowired
+<i>36</i>&nbsp;    ImagesDao imagesDao;
+<i>37</i>&nbsp;    @Autowired
+<i>38</i>&nbsp;    UserDao userDao;
+<i>39</i>&nbsp;
+<b class="fc"><i>40</i>&nbsp;    Integer pageItemNumber = 6;</b>
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;    /* 更改订单状态 */
+<i>43</i>&nbsp;    public Integer changeOrderStatus(Integer orderId, Integer status) {
+<b class="fc"><i>44</i>&nbsp;        Order order = orderDao.findById(orderId);</b>
+<b class="fc"><i>45</i>&nbsp;        if (order == null) return OrderConstant.ORDER_NOT_FOUND;</b>
+<i>46</i>&nbsp;        else {
+<b class="fc"><i>47</i>&nbsp;            order.setStatus(status);</b>
+<b class="fc"><i>48</i>&nbsp;            orderDao.save(order);</b>
+<b class="fc"><i>49</i>&nbsp;            return OrderConstant.SUCCESS;</b>
+<i>50</i>&nbsp;        }
+<i>51</i>&nbsp;    };
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    /* 下订单 */
+<i>54</i>&nbsp;    public Integer makeOrder(User user, Goods goods, Integer goodsNum)
+<i>55</i>&nbsp;    {
+<i>56</i>&nbsp;        /* 验证商品状态 */
+<b class="fc"><i>57</i>&nbsp;        if (goods.getState() == GoodsConstant.ON_SALE) {</b>
+<i>58</i>&nbsp;            /* 验证商品买家和卖家是否同一人 */
+<b class="fc"><i>59</i>&nbsp;            if (goods.getUser() == user) return OrderConstant.BUYER_SELLER_SAME;</b>
+<i>60</i>&nbsp;            /* 验证商品库存是否足够 */
+<b class="fc"><i>61</i>&nbsp;            if (goods.getInventory() &lt; goodsNum) return OrderConstant.GOODS_INVENTORY_NOT_ENOUGH;</b>
+<i>62</i>&nbsp;
+<b class="fc"><i>63</i>&nbsp;            Order order = new Order();</b>
+<b class="fc"><i>64</i>&nbsp;            order.setGoods(goods);</b>
+<b class="fc"><i>65</i>&nbsp;            order.setBuyer(user);</b>
+<b class="fc"><i>66</i>&nbsp;            order.setNum(goodsNum);</b>
+<b class="fc"><i>67</i>&nbsp;            order.setSaleroom(goods.getPrice().multiply(BigDecimal.valueOf(goodsNum)));</b>
+<b class="fc"><i>68</i>&nbsp;            order.setSeller(goods.getUser());</b>
+<b class="fc"><i>69</i>&nbsp;            orderDao.save(order);</b>
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;            /* 减少商品库存 */
+<b class="fc"><i>72</i>&nbsp;            goods.setInventory(goods.getInventory() - goodsNum);</b>
+<b class="fc"><i>73</i>&nbsp;            if(goods.getInventory() == 0){</b>
+<b class="fc"><i>74</i>&nbsp;                goods.setState(0);</b>
+<i>75</i>&nbsp;            }
+<b class="fc"><i>76</i>&nbsp;            goodsDao.save(goods);</b>
+<b class="fc"><i>77</i>&nbsp;            return OrderConstant.SUCCESS;</b>
+<i>78</i>&nbsp;        }
+<b class="fc"><i>79</i>&nbsp;        return GoodsConstant.SOLD_OUT;</b>
+<i>80</i>&nbsp;    };
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    public Integer affirmWants(Integer wantsId)
+<i>83</i>&nbsp;    {
+<b class="fc"><i>84</i>&nbsp;        Wants wants = wantsDao.findById(wantsId);</b>
+<b class="fc"><i>85</i>&nbsp;        if (wants == null) return OrderConstant.WANTS_NOT_FOUNT;</b>
+<i>86</i>&nbsp;        else {
+<b class="fc"><i>87</i>&nbsp;            Goods goods = wants.getGoods();</b>
+<b class="fc"><i>88</i>&nbsp;            Integer returnVal = makeOrder(wants.getBuyer(), wants.getGoods(), wants.getNum());</b>
+<b class="fc"><i>89</i>&nbsp;            if (returnVal == OrderConstant.SUCCESS) wantsDao.deleteAllWantsByGoods(goods);</b>
+<b class="fc"><i>90</i>&nbsp;            return returnVal;</b>
+<i>91</i>&nbsp;        }
+<i>92</i>&nbsp;    };
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    /* 根据用户名获取订单信息 */
+<i>95</i>&nbsp;    public List&lt;OrderDto&gt; getOrdersByUser(User user, Timestamp startTime, Timestamp endTime, Integer fetchPage) {
+<b class="fc"><i>96</i>&nbsp;        List&lt;OrderDto&gt; buyerOrderList = getOrdersByBuyer(user, startTime, endTime, fetchPage);</b>
+<b class="fc"><i>97</i>&nbsp;        List&lt;OrderDto&gt; sellerOrderList = getOrdersBySeller(user, startTime, endTime, fetchPage);</b>
+<b class="fc"><i>98</i>&nbsp;        buyerOrderList.addAll(sellerOrderList);</b>
+<b class="fc"><i>99</i>&nbsp;        return buyerOrderList;</b>
+<i>100</i>&nbsp;    };
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;    public List&lt;OrderDto&gt; getOrdersBySeller(User user, Timestamp startTime, Timestamp endTime, Integer fetchPage) {
+<b class="fc"><i>103</i>&nbsp;        Pageable pageable = PageRequest.of(fetchPage, pageItemNumber, Sort.Direction.DESC, &quot;timestamp&quot;);</b>
+<b class="fc"><i>104</i>&nbsp;        List&lt;Order&gt; orderList = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>105</i>&nbsp;        if (startTime == null &amp;&amp; endTime == null) orderList = orderDao.findAllBySeller(user, pageable).getContent();</b>
+<b class="fc"><i>106</i>&nbsp;        else if (startTime != null &amp;&amp; endTime != null) orderList = orderDao.findAllBySellerAndTimestampBetween(user, startTime, endTime, pageable).getContent();</b>
+<b class="fc"><i>107</i>&nbsp;        else if (startTime != null) orderList = orderDao.findAllBySellerAndTimestampAfter(user, startTime, pageable).getContent();</b>
+<b class="fc"><i>108</i>&nbsp;        else orderList = orderDao.findAllBySellerAndTimestampBefore(user, endTime, pageable).getContent();</b>
+<b class="fc"><i>109</i>&nbsp;        List&lt;OrderDto&gt; result = OrderDto.convert(orderList);</b>
+<b class="fc"><i>110</i>&nbsp;        return result;</b>
+<i>111</i>&nbsp;    };
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    public List&lt;OrderDto&gt; getOrdersByBuyer(User user, Timestamp startTime, Timestamp endTime, Integer fetchPage) {
+<b class="fc"><i>114</i>&nbsp;        Pageable pageable = PageRequest.of(fetchPage, pageItemNumber, Sort.Direction.DESC, &quot;timestamp&quot;);</b>
+<b class="fc"><i>115</i>&nbsp;        List&lt;Order&gt; orderList = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>116</i>&nbsp;        if (startTime == null &amp;&amp; endTime == null) orderList = orderDao.findAllByBuyer(user, pageable).getContent();</b>
+<b class="fc"><i>117</i>&nbsp;        else if (startTime != null &amp;&amp; endTime != null) orderList = orderDao.findAllByBuyerAndTimestampBetween(user, startTime, endTime, pageable).getContent();</b>
+<b class="fc"><i>118</i>&nbsp;        else if (startTime != null) orderList = orderDao.findAllByBuyerAndTimestampAfter(user, startTime, pageable).getContent();</b>
+<b class="fc"><i>119</i>&nbsp;        else orderList = orderDao.findAllByBuyerAndTimestampBefore(user, endTime, pageable).getContent();</b>
+<b class="fc"><i>120</i>&nbsp;        List&lt;OrderDto&gt; result = OrderDto.convert(orderList);</b>
+<b class="fc"><i>121</i>&nbsp;        return result;</b>
+<i>122</i>&nbsp;    };
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;    public Integer commentAndRateOnOrder(Integer orderId, String comment, Integer rating) {
+<b class="fc"><i>125</i>&nbsp;        Order order = orderDao.findById(orderId);</b>
+<b class="fc"><i>126</i>&nbsp;        if (order == null) return OrderConstant.ORDER_NOT_FOUND;</b>
+<i>127</i>&nbsp;        else {
+<b class="fc"><i>128</i>&nbsp;            if (!comment.equals(&quot;&quot;)) order.setComment(comment);</b>
+<b class="fc"><i>129</i>&nbsp;            order.setRating(rating);</b>
+<b class="fc"><i>130</i>&nbsp;            orderDao.saveAndFlush(order);</b>
+<i>131</i>&nbsp;            //更新卖家信誉分
+<b class="fc"><i>132</i>&nbsp;            User user=order.getSeller();</b>
+<b class="fc"><i>133</i>&nbsp;            List&lt;Order&gt; orders = user.getSellerList();</b>
+<b class="fc"><i>134</i>&nbsp;            Double totalCredit = 0.0;</b>
+<b class="fc"><i>135</i>&nbsp;            Integer count = 0;</b>
+<b class="fc"><i>136</i>&nbsp;            for(Order it : orders){</b>
+<b class="fc"><i>137</i>&nbsp;               count++;</b>
+<b class="fc"><i>138</i>&nbsp;               totalCredit += it.getRating();</b>
+<b class="fc"><i>139</i>&nbsp;            }</b>
+<b class="fc"><i>140</i>&nbsp;            Double credit = totalCredit / count;</b>
+<b class="fc"><i>141</i>&nbsp;            user.setCredit(credit);</b>
+<b class="fc"><i>142</i>&nbsp;            userDao.saveAndFlush(user);</b>
+<b class="fc"><i>143</i>&nbsp;            return OrderConstant.SUCCESS;</b>
+<i>144</i>&nbsp;        }
+<i>145</i>&nbsp;    }
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-09-11 15:23</div>
+</div>
+</body>
+</html>

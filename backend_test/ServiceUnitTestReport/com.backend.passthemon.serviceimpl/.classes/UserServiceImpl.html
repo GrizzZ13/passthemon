@@ -1,0 +1,227 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: UserServiceImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.backend.passthemon.serviceimpl</a> ]
+</div>
+
+<h1>Coverage Summary for Class: UserServiceImpl (com.backend.passthemon.serviceimpl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (59/ 59)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package com.backend.passthemon.serviceimpl;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import com.alibaba.fastjson.JSONObject;
+<i>4</i>&nbsp;import com.backend.passthemon.constant.UserConstant;
+<i>5</i>&nbsp;import com.backend.passthemon.dto.UserInfoDto;
+<i>6</i>&nbsp;import com.backend.passthemon.entity.Follow;
+<i>7</i>&nbsp;import com.backend.passthemon.entity.User;
+<i>8</i>&nbsp;import com.backend.passthemon.repository.UserRepository;
+<i>9</i>&nbsp;import com.backend.passthemon.repository.VerificationRepository;
+<i>10</i>&nbsp;import com.backend.passthemon.redis.RedisService;
+<i>11</i>&nbsp;import com.backend.passthemon.service.UserService;
+<i>12</i>&nbsp;import com.backend.passthemon.utils.msgutils.Msg;
+<i>13</i>&nbsp;import com.backend.passthemon.utils.msgutils.MsgUtil;
+<i>14</i>&nbsp;import com.backend.passthemon.utils.tokenutils.JwtUtil;
+<i>15</i>&nbsp;import lombok.extern.slf4j.Slf4j;
+<i>16</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>17</i>&nbsp;import org.springframework.stereotype.Service;
+<i>18</i>&nbsp;
+<i>19</i>&nbsp;import org.springframework.transaction.annotation.Transactional;
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;import java.util.ArrayList;
+<i>22</i>&nbsp;import java.util.List;
+<i>23</i>&nbsp;
+<b class="fc"><i>24</i>&nbsp;@Slf4j</b>
+<i>25</i>&nbsp;@Service
+<b class="fc"><i>26</i>&nbsp;public class UserServiceImpl implements UserService {</b>
+<i>27</i>&nbsp;    @Autowired
+<i>28</i>&nbsp;    UserRepository userRepository;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;    @Autowired
+<i>31</i>&nbsp;    VerificationRepository verificationRepository;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;    @Autowired
+<i>34</i>&nbsp;    RedisService redisService;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    @Override
+<i>37</i>&nbsp;    public User getUserByUserId(Integer userId) {
+<b class="fc"><i>38</i>&nbsp;        return userRepository.findUserById(userId);</b>
+<i>39</i>&nbsp;    }
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    @Override
+<i>42</i>&nbsp;    public User getUserByEmail(String email) {
+<b class="fc"><i>43</i>&nbsp;        return userRepository.getUserByEmail(email);</b>
+<i>44</i>&nbsp;    }
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    @Transactional
+<i>47</i>&nbsp;    @Override
+<i>48</i>&nbsp;    public Msg login(String email, String password) {
+<b class="fc"><i>49</i>&nbsp;        User user = userRepository.getUserByEmail(email);</b>
+<b class="fc"><i>50</i>&nbsp;        if(user == null) {</b>
+<b class="fc"><i>51</i>&nbsp;            log.info(&quot;[UserService-Login] : &quot; + MsgUtil.ACCOUNT_NOT_EXIST_MSG);</b>
+<b class="fc"><i>52</i>&nbsp;            return MsgUtil.makeMsg(MsgUtil.ACCOUNT_NOT_EXIST, MsgUtil.ACCOUNT_NOT_EXIST_MSG);</b>
+<i>53</i>&nbsp;        }
+<b class="fc"><i>54</i>&nbsp;        else if(!user.getPassword().equals(password)) {</b>
+<b class="fc"><i>55</i>&nbsp;            log.info(&quot;[UserService-Login] : &quot; + MsgUtil.WRONG_PASSWORD_MSG);</b>
+<b class="fc"><i>56</i>&nbsp;            return MsgUtil.makeMsg(MsgUtil.WRONG_PASSWORD, MsgUtil.WRONG_PASSWORD_MSG);</b>
+<i>57</i>&nbsp;        }
+<i>58</i>&nbsp;        else {
+<b class="fc"><i>59</i>&nbsp;            String token = null;</b>
+<b class="fc"><i>60</i>&nbsp;            String refreshToken = null;</b>
+<i>61</i>&nbsp;            try{
+<b class="fc"><i>62</i>&nbsp;                email.toString(); // ²âÊÔ¸²¸ÇÂÊ×¨ÓÃ</b>
+<b class="fc"><i>63</i>&nbsp;                token = JwtUtil.generateAccessJWT(email, user.getId());</b>
+<b class="fc"><i>64</i>&nbsp;                refreshToken = JwtUtil.generateRefreshJWT(email, user.getId());</b>
+<i>65</i>&nbsp;            }
+<b class="fc"><i>66</i>&nbsp;            catch (Exception e){</b>
+<b class="fc"><i>67</i>&nbsp;                e.printStackTrace();</b>
+<b class="fc"><i>68</i>&nbsp;                log.info(&quot;[UserService-Login] : &quot; + MsgUtil.WRONG_PASSWORD_MSG);</b>
+<b class="fc"><i>69</i>&nbsp;                return MsgUtil.makeMsg(MsgUtil.WRONG_PASSWORD, MsgUtil.WRONG_PASSWORD_MSG);</b>
+<b class="fc"><i>70</i>&nbsp;            }</b>
+<b class="fc"><i>71</i>&nbsp;            user.setRefreshToken(refreshToken);</b>
+<b class="fc"><i>72</i>&nbsp;            userRepository.save(user);</b>
+<b class="fc"><i>73</i>&nbsp;            log.info(&quot;[UserService-Login] : token : &quot; + token);</b>
+<b class="fc"><i>74</i>&nbsp;            JSONObject jsonObject = new JSONObject();</b>
+<b class="fc"><i>75</i>&nbsp;            jsonObject.put(UserConstant.TOKEN, token);</b>
+<b class="fc"><i>76</i>&nbsp;            jsonObject.put(UserConstant.USERID, user.getId());</b>
+<b class="fc"><i>77</i>&nbsp;            return MsgUtil.makeMsg(MsgUtil.LOGIN_SUCCEED, MsgUtil.LOGIN_SUCCEED_MSG, jsonObject);</b>
+<i>78</i>&nbsp;        }
+<i>79</i>&nbsp;    }
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    @Transactional
+<i>82</i>&nbsp;    @Override
+<i>83</i>&nbsp;    public User signup(String email, String password) {
+<b class="fc"><i>84</i>&nbsp;        User user = new User();</b>
+<b class="fc"><i>85</i>&nbsp;        user.setEmail(email);</b>
+<b class="fc"><i>86</i>&nbsp;        user.setPassword(password);</b>
+<b class="fc"><i>87</i>&nbsp;        user.setCredit(UserConstant.INI_CREDIT);</b>
+<b class="fc"><i>88</i>&nbsp;        user.setGender(UserConstant.INI_GENDER);</b>
+<b class="fc"><i>89</i>&nbsp;        user.setState(UserConstant.INI_STATE);</b>
+<b class="fc"><i>90</i>&nbsp;        return userRepository.save(user);</b>
+<i>91</i>&nbsp;    }
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    @Transactional
+<i>94</i>&nbsp;    @Override
+<i>95</i>&nbsp;    public User reset(String email, String password) {
+<b class="fc"><i>96</i>&nbsp;        User user = userRepository.getUserByEmail(email);</b>
+<b class="fc"><i>97</i>&nbsp;        if (user==null)</b>
+<b class="fc"><i>98</i>&nbsp;            return null;</b>
+<i>99</i>&nbsp;        else{
+<b class="fc"><i>100</i>&nbsp;            user.setPassword(password);</b>
+<b class="fc"><i>101</i>&nbsp;            user = userRepository.save(user);</b>
+<b class="fc"><i>102</i>&nbsp;            return user;</b>
+<i>103</i>&nbsp;        }
+<i>104</i>&nbsp;    }
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;    @Override
+<i>107</i>&nbsp;    public User save(User user) {
+<b class="fc"><i>108</i>&nbsp;        return userRepository.save(user);</b>
+<i>109</i>&nbsp;    }
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;    @Override
+<i>112</i>&nbsp;    public void editUser(Integer userid,String username,String phone,String image,Integer gender){
+<b class="fc"><i>113</i>&nbsp;        User user=userRepository.findUserById(userid);</b>
+<b class="fc"><i>114</i>&nbsp;        user.setUsername(username);</b>
+<b class="fc"><i>115</i>&nbsp;        user.setPhone(phone);</b>
+<b class="fc"><i>116</i>&nbsp;        user.setImage(image);</b>
+<b class="fc"><i>117</i>&nbsp;        user.setGender(gender);</b>
+<b class="fc"><i>118</i>&nbsp;        userRepository.save(user);</b>
+<b class="fc"><i>119</i>&nbsp;    }</b>
+<i>120</i>&nbsp;    @Override
+<i>121</i>&nbsp;    public List&lt;Follow&gt; getFollowsByUserid(Integer userid){
+<b class="fc"><i>122</i>&nbsp;        return userRepository.getFollowsByUserid(userid);</b>
+<i>123</i>&nbsp;    }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    @Override
+<i>126</i>&nbsp;    public  List&lt;UserInfoDto&gt; listFollowingsByPage(Integer fetchPage, Integer userid){
+<b class="fc"><i>127</i>&nbsp;        List&lt;Follow&gt; follows = userRepository.listFollowsByPage(fetchPage,userid);</b>
+<b class="fc"><i>128</i>&nbsp;        List&lt;UserInfoDto&gt; userInfoDtoList = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>129</i>&nbsp;        for (Follow follow : follows)</b>
+<i>130</i>&nbsp;        {
+<b class="fc"><i>131</i>&nbsp;            User user = userRepository.findUserById(follow.getFollower());</b>
+<b class="fc"><i>132</i>&nbsp;            if (user!=null)</b>
+<i>133</i>&nbsp;            {
+<b class="fc"><i>134</i>&nbsp;                userInfoDtoList.add(UserInfoDto.convert(user));</b>
+<i>135</i>&nbsp;            }
+<b class="fc"><i>136</i>&nbsp;        }</b>
+<b class="fc"><i>137</i>&nbsp;        return userInfoDtoList;</b>
+<i>138</i>&nbsp;    }
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;    @Override
+<i>141</i>&nbsp;    public  String getUserNameById(Integer userid){
+<b class="fc"><i>142</i>&nbsp;        return userRepository.findUserById(userid).getUsername();</b>
+<i>143</i>&nbsp;    }
+<i>144</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-09-11 15:24</div>
+</div>
+</body>
+</html>

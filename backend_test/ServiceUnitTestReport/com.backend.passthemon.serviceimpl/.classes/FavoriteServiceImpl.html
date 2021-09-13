@@ -1,0 +1,156 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: FavoriteServiceImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.backend.passthemon.serviceimpl</a> ]
+</div>
+
+<h1>Coverage Summary for Class: FavoriteServiceImpl (com.backend.passthemon.serviceimpl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FavoriteServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (16/ 16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package com.backend.passthemon.serviceimpl;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import com.backend.passthemon.dto.FavoriteDto;
+<i>4</i>&nbsp;import com.backend.passthemon.entity.Favorite;
+<i>5</i>&nbsp;import com.backend.passthemon.entity.Goods;
+<i>6</i>&nbsp;import com.backend.passthemon.entity.User;
+<i>7</i>&nbsp;import com.backend.passthemon.repository.FavoriteRepository;
+<i>8</i>&nbsp;import com.backend.passthemon.repository.GoodsRepository;
+<i>9</i>&nbsp;import com.backend.passthemon.repository.ImagesRepository;
+<i>10</i>&nbsp;import com.backend.passthemon.repository.UserRepository;
+<i>11</i>&nbsp;import com.backend.passthemon.service.FavoriteService;
+<i>12</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>13</i>&nbsp;import org.springframework.stereotype.Service;
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;import java.util.List;
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;@Service
+<b class="fc"><i>18</i>&nbsp;public class FavoriteServiceImpl implements FavoriteService {</b>
+<i>19</i>&nbsp;    @Autowired
+<i>20</i>&nbsp;    private FavoriteRepository favoriteRepository;
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;    @Autowired
+<i>23</i>&nbsp;    private UserRepository userRepository;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    @Autowired
+<i>26</i>&nbsp;    private GoodsRepository goodsRepository;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;    @Autowired
+<i>29</i>&nbsp;    private ImagesRepository imagesRepository;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;    @Override
+<i>32</i>&nbsp;    public List&lt;FavoriteDto&gt; listFavoriteByPage(Integer fetchPage, Integer userId){
+<b class="fc"><i>33</i>&nbsp;        User user = new User(userId);</b>
+<b class="fc"><i>34</i>&nbsp;        List&lt;Favorite&gt; favoriteList = favoriteRepository.listFavoriteByPage(fetchPage, user);</b>
+<b class="fc"><i>35</i>&nbsp;        List&lt;FavoriteDto&gt; result = FavoriteDto.convert(favoriteList);</b>
+<i>36</i>&nbsp;//        for(FavoriteDto favoriteDto : result){
+<i>37</i>&nbsp;//            favoriteDto.setImage(imagesRepository.getAllImgByGoodsId(favoriteDto.getId()).get(0).getImg());
+<i>38</i>&nbsp;//        }
+<i>39</i>&nbsp;
+<b class="fc"><i>40</i>&nbsp;        return result;</b>
+<i>41</i>&nbsp;    }
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    @Override
+<i>44</i>&nbsp;    public Favorite addFavorite(Integer userId, Integer goodsId){
+<b class="fc"><i>45</i>&nbsp;        User user = userRepository.findUserById(userId);</b>
+<b class="fc"><i>46</i>&nbsp;        Goods goods = goodsRepository.findGoodsById(goodsId);</b>
+<i>47</i>&nbsp;
+<b class="fc"><i>48</i>&nbsp;        return favoriteRepository.addFavorite(user, goods);</b>
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    @Override
+<i>52</i>&nbsp;    public Favorite deleteFavorite(Integer userId, Integer goodsId){
+<b class="fc"><i>53</i>&nbsp;        User user = new User(userId);</b>
+<b class="fc"><i>54</i>&nbsp;        Goods goods = new Goods(goodsId);</b>
+<i>55</i>&nbsp;
+<b class="fc"><i>56</i>&nbsp;        return favoriteRepository.deleteFavorite(user, goods);</b>
+<i>57</i>&nbsp;    }
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    @Override
+<i>60</i>&nbsp;    public Favorite deleteAllFavorite(Integer userId){
+<b class="fc"><i>61</i>&nbsp;        User user = new User(userId);</b>
+<i>62</i>&nbsp;
+<b class="fc"><i>63</i>&nbsp;        return favoriteRepository.deleteAllFavorite(user);</b>
+<i>64</i>&nbsp;    }
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    @Override
+<i>67</i>&nbsp;    public Favorite checkFavorite(Integer userId, Integer goodsId){
+<b class="fc"><i>68</i>&nbsp;        User user = new User(userId);</b>
+<b class="fc"><i>69</i>&nbsp;        Goods goods = new Goods(goodsId);</b>
+<i>70</i>&nbsp;
+<b class="fc"><i>71</i>&nbsp;        return favoriteRepository.checkFavorite(user, goods);</b>
+<i>72</i>&nbsp;    }
+<i>73</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-09-11 15:24</div>
+</div>
+</body>
+</html>

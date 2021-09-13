@@ -1,0 +1,110 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: EmailServiceImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.backend.passthemon.serviceimpl</a> ]
+</div>
+
+<h1>Coverage Summary for Class: EmailServiceImpl (com.backend.passthemon.serviceimpl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EmailServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/ 8)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package com.backend.passthemon.serviceimpl;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import com.backend.passthemon.service.EmailService;
+<i>4</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>5</i>&nbsp;import org.springframework.mail.SimpleMailMessage;
+<i>6</i>&nbsp;import org.springframework.mail.javamail.JavaMailSender;
+<i>7</i>&nbsp;import org.springframework.stereotype.Service;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;@Service
+<b class="fc"><i>10</i>&nbsp;public class EmailServiceImpl implements EmailService {</b>
+<i>11</i>&nbsp;    @Autowired
+<i>12</i>&nbsp;    JavaMailSender javaMailSender;
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;    @Override
+<i>15</i>&nbsp;    public void sendSimpleEmail(String from, String to, String subject, String text) {
+<b class="fc"><i>16</i>&nbsp;        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();</b>
+<i>17</i>&nbsp;        // sender
+<b class="fc"><i>18</i>&nbsp;        simpleMailMessage.setFrom(from);</b>
+<i>19</i>&nbsp;        // receiver
+<b class="fc"><i>20</i>&nbsp;        simpleMailMessage.setTo(to);</b>
+<i>21</i>&nbsp;        // subject
+<b class="fc"><i>22</i>&nbsp;        simpleMailMessage.setSubject(subject);</b>
+<i>23</i>&nbsp;        // content
+<b class="fc"><i>24</i>&nbsp;        simpleMailMessage.setText(text);</b>
+<b class="fc"><i>25</i>&nbsp;        javaMailSender.send(simpleMailMessage);</b>
+<b class="fc"><i>26</i>&nbsp;    }</b>
+<i>27</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-09-11 15:24</div>
+</div>
+</body>
+</html>

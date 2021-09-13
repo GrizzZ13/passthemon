@@ -1,0 +1,177 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ChannelController</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.backend.passthemon.controller</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ChannelController (com.backend.passthemon.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChannelController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (30/ 30)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package com.backend.passthemon.controller;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import com.alibaba.fastjson.JSONObject;
+<i>4</i>&nbsp;import com.backend.passthemon.dto.ChannelDto;
+<i>5</i>&nbsp;import com.backend.passthemon.dto.ChatDto;
+<i>6</i>&nbsp;import com.backend.passthemon.entity.Channel;
+<i>7</i>&nbsp;import com.backend.passthemon.entity.Chat;
+<i>8</i>&nbsp;import com.backend.passthemon.entity.User;
+<i>9</i>&nbsp;import com.backend.passthemon.service.ChannelService;
+<i>10</i>&nbsp;import com.backend.passthemon.service.ChatService;
+<i>11</i>&nbsp;import com.backend.passthemon.redis.RedisService;
+<i>12</i>&nbsp;import com.backend.passthemon.utils.keyutils.KeyUtil;
+<i>13</i>&nbsp;import com.backend.passthemon.utils.msgutils.Msg;
+<i>14</i>&nbsp;import com.backend.passthemon.utils.msgutils.MsgUtil;
+<i>15</i>&nbsp;import lombok.extern.slf4j.Slf4j;
+<i>16</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>17</i>&nbsp;import org.springframework.web.bind.annotation.CrossOrigin;
+<i>18</i>&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+<i>19</i>&nbsp;import org.springframework.web.bind.annotation.RequestParam;
+<i>20</i>&nbsp;import org.springframework.web.bind.annotation.RestController;
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;import java.util.Collections;
+<i>23</i>&nbsp;import java.util.LinkedList;
+<i>24</i>&nbsp;import java.util.List;
+<i>25</i>&nbsp;
+<b class="fc"><i>26</i>&nbsp;@Slf4j</b>
+<i>27</i>&nbsp;@RestController
+<i>28</i>&nbsp;@CrossOrigin
+<b class="fc"><i>29</i>&nbsp;public class ChannelController {</b>
+<i>30</i>&nbsp;    @Autowired
+<i>31</i>&nbsp;    ChannelService channelService;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;    @Autowired
+<i>34</i>&nbsp;    ChatService chatService;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    @Autowired
+<i>37</i>&nbsp;    RedisService redisService;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    @RequestMapping(&quot;/channel/getChannels&quot;)
+<i>40</i>&nbsp;    public Msg getChannels(@RequestParam(&quot;userid&quot;) Integer userid) {
+<b class="fc"><i>41</i>&nbsp;        List&lt;Channel&gt; channels = channelService.getChannelsByAuthor(new User(userid));</b>
+<b class="fc"><i>42</i>&nbsp;        List&lt;ChannelDto&gt; channelDtoList = ChannelDto.convert(channels);</b>
+<b class="fc"><i>43</i>&nbsp;        JSONObject jsonObject = new JSONObject();</b>
+<b class="fc"><i>44</i>&nbsp;        jsonObject.put(&quot;list&quot;, channelDtoList);</b>
+<b class="fc"><i>45</i>&nbsp;        return MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG, jsonObject);</b>
+<i>46</i>&nbsp;    }
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    @RequestMapping(&quot;/channel/getHistory&quot;)
+<i>49</i>&nbsp;    public Msg getHistoryByOffsetAndPageNumber(@RequestParam(&quot;author&quot;) Integer author,
+<i>50</i>&nbsp;                                               @RequestParam(&quot;recipient&quot;) Integer recipient,
+<i>51</i>&nbsp;                                               @RequestParam(&quot;counts&quot;) Integer counts,
+<i>52</i>&nbsp;                                               @RequestParam(&quot;pageNumber&quot;) Integer pageNumber){
+<b class="fc"><i>53</i>&nbsp;        log.info(&quot;pageNumber : &quot; + pageNumber.toString() + &quot; , counts : &quot; + counts.toString());</b>
+<b class="fc"><i>54</i>&nbsp;        List&lt;Chat&gt; chats = chatService.getChatHistoryByChannelsAndOffset(author, recipient, counts, pageNumber);</b>
+<b class="fc"><i>55</i>&nbsp;        List&lt;ChatDto&gt; chatDtoList = ChatDto.convert(chats);</b>
+<b class="fc"><i>56</i>&nbsp;        JSONObject jsonObject = new JSONObject();</b>
+<b class="fc"><i>57</i>&nbsp;        jsonObject.put(&quot;list&quot;, chatDtoList);</b>
+<b class="fc"><i>58</i>&nbsp;        return MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG, jsonObject);</b>
+<i>59</i>&nbsp;    }
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    @RequestMapping(&quot;/channel/initHistory&quot;)
+<i>62</i>&nbsp;    public Msg initHistory(@RequestParam(&quot;author&quot;) Integer author,
+<i>63</i>&nbsp;                           @RequestParam(&quot;recipient&quot;) Integer recipient){
+<b class="fc"><i>64</i>&nbsp;        List&lt;ChatDto&gt; chatDtoList = new LinkedList&lt;&gt;();</b>
+<b class="fc"><i>65</i>&nbsp;        getChatDtoList(recipient, author, chatDtoList);</b>
+<b class="fc"><i>66</i>&nbsp;        getChatDtoList(author, recipient, chatDtoList);</b>
+<b class="fc"><i>67</i>&nbsp;        Collections.sort(chatDtoList);</b>
+<b class="fc"><i>68</i>&nbsp;        JSONObject jsonObject = new JSONObject();</b>
+<b class="fc"><i>69</i>&nbsp;        jsonObject.put(&quot;list&quot;, chatDtoList);</b>
+<b class="fc"><i>70</i>&nbsp;        return MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG, jsonObject);</b>
+<i>71</i>&nbsp;    }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    private void getChatDtoList(@RequestParam(&quot;author&quot;) Integer author,
+<i>74</i>&nbsp;                                @RequestParam(&quot;recipient&quot;) Integer recipient,
+<i>75</i>&nbsp;                                List&lt;ChatDto&gt; chatDtoList) {
+<i>76</i>&nbsp;        // get channel id
+<i>77</i>&nbsp;        Integer channelId;
+<b class="fc"><i>78</i>&nbsp;        String key = KeyUtil.ChannelKey(author, recipient);</b>
+<b class="fc"><i>79</i>&nbsp;        if (!redisService.exists(key)){</b>
+<i>80</i>&nbsp;            // search in mysql
+<b class="fc"><i>81</i>&nbsp;            channelId = channelService.getChannelIdByAuthorAndRecipient(author, recipient);</b>
+<b class="fc"><i>82</i>&nbsp;            if(channelId==null) return;</b>
+<i>83</i>&nbsp;        }
+<i>84</i>&nbsp;        else{
+<b class="fc"><i>85</i>&nbsp;            channelId = (Integer) redisService.get(key);</b>
+<i>86</i>&nbsp;        }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;        // get chat history
+<b class="fc"><i>89</i>&nbsp;        String chatKey = KeyUtil.ChatKey(channelId);</b>
+<b class="fc"><i>90</i>&nbsp;        List&lt;Object&gt; objectList2 = redisService.range(chatKey, 0, -1);</b>
+<b class="fc"><i>91</i>&nbsp;        for (Object object : objectList2)</b>
+<b class="fc"><i>92</i>&nbsp;            chatDtoList.add((ChatDto) object);</b>
+<b class="fc"><i>93</i>&nbsp;    }</b>
+<i>94</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-09-11 15:21</div>
+</div>
+</body>
+</html>

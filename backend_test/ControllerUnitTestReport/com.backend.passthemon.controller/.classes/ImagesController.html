@@ -1,0 +1,153 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ImagesController</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.backend.passthemon.controller</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ImagesController (com.backend.passthemon.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ImagesController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (32/ 32)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package com.backend.passthemon.controller;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import com.alibaba.fastjson.JSONObject;
+<i>4</i>&nbsp;import com.backend.passthemon.entity.Images;
+<i>5</i>&nbsp;import com.backend.passthemon.service.ImagesService;
+<i>6</i>&nbsp;import com.backend.passthemon.utils.msgutils.Msg;
+<i>7</i>&nbsp;import com.backend.passthemon.utils.msgutils.MsgUtil;
+<i>8</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>9</i>&nbsp;import org.springframework.web.bind.annotation.CrossOrigin;
+<i>10</i>&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+<i>11</i>&nbsp;import org.springframework.web.bind.annotation.RequestParam;
+<i>12</i>&nbsp;import org.springframework.web.bind.annotation.RestController;
+<i>13</i>&nbsp;import org.springframework.web.context.request.RequestContextHolder;
+<i>14</i>&nbsp;import org.springframework.web.context.request.ServletRequestAttributes;
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;import javax.servlet.http.HttpServletRequest;
+<i>17</i>&nbsp;import java.util.ArrayList;
+<i>18</i>&nbsp;import java.util.List;
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;@RestController
+<i>21</i>&nbsp;@CrossOrigin
+<b class="fc"><i>22</i>&nbsp;public class ImagesController {</b>
+<i>23</i>&nbsp;    @Autowired
+<i>24</i>&nbsp;    private ImagesService imagesService;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;    @RequestMapping(&quot;/images/getAllImgByGoodsId&quot;)
+<i>27</i>&nbsp;    public Msg getAllImgByGoodsId(@RequestParam(value = &quot;goodsId&quot;) Integer goodsId){
+<b class="fc"><i>28</i>&nbsp;        List&lt;Images&gt; result = imagesService.getAllImgByGoodsId(goodsId);</b>
+<b class="fc"><i>29</i>&nbsp;        JSONObject jsonObject = new JSONObject();</b>
+<b class="fc"><i>30</i>&nbsp;        jsonObject.put(&quot;list&quot;, result);</b>
+<b class="fc"><i>31</i>&nbsp;        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();</b>
+<b class="fc"><i>32</i>&nbsp;        Msg msg = MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG, jsonObject, request);</b>
+<i>33</i>&nbsp;
+<b class="fc"><i>34</i>&nbsp;        return msg;</b>
+<i>35</i>&nbsp;    }
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;    @RequestMapping(&quot;/images/getAllImgForThisPage&quot;)
+<i>38</i>&nbsp;    public Msg getAllImgForThisPage(@RequestParam(value = &quot;list&quot;) String strList){
+<b class="fc"><i>39</i>&nbsp;        System.out.println(strList);</b>
+<b class="fc"><i>40</i>&nbsp;        int lastIndex = 0;</b>
+<b class="fc"><i>41</i>&nbsp;        List&lt;Integer&gt; ids = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>42</i>&nbsp;        for(int i = 0; i &lt; strList.length(); i++){</b>
+<b class="fc"><i>43</i>&nbsp;            if(strList.charAt(i) == &#39;,&#39;){</b>
+<b class="fc"><i>44</i>&nbsp;                Integer id = Integer.parseInt(strList.substring(lastIndex, i));</b>
+<b class="fc"><i>45</i>&nbsp;                ids.add(id);</b>
+<b class="fc"><i>46</i>&nbsp;                lastIndex = i + 1;</b>
+<i>47</i>&nbsp;            }
+<b class="fc"><i>48</i>&nbsp;            if(i == strList.length() - 1){</b>
+<b class="fc"><i>49</i>&nbsp;                Integer id = Integer.parseInt(strList.substring(lastIndex, i + 1));</b>
+<b class="fc"><i>50</i>&nbsp;                ids.add(id);</b>
+<b class="fc"><i>51</i>&nbsp;                break;</b>
+<i>52</i>&nbsp;            }
+<i>53</i>&nbsp;        }
+<b class="fc"><i>54</i>&nbsp;        List&lt;JSONObject&gt; result = new ArrayList&lt;&gt;();</b>
+<i>55</i>&nbsp;
+<b class="fc"><i>56</i>&nbsp;        for(Integer goodsId : ids){</b>
+<b class="fc"><i>57</i>&nbsp;            List&lt;Images&gt; images = imagesService.getAllImgByGoodsId(goodsId);</b>
+<b class="fc"><i>58</i>&nbsp;            JSONObject json = new JSONObject();</b>
+<b class="fc"><i>59</i>&nbsp;            json.put(&quot;image&quot;, images.get(0).getImg());</b>
+<b class="fc"><i>60</i>&nbsp;            json.put(&quot;goodsId&quot;, goodsId);</b>
+<b class="fc"><i>61</i>&nbsp;            result.add(json);</b>
+<b class="fc"><i>62</i>&nbsp;        }</b>
+<b class="fc"><i>63</i>&nbsp;        JSONObject jsonObject = new JSONObject();</b>
+<b class="fc"><i>64</i>&nbsp;        jsonObject.put(&quot;list&quot;, result);</b>
+<b class="fc"><i>65</i>&nbsp;        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();</b>
+<b class="fc"><i>66</i>&nbsp;        Msg msg = MsgUtil.makeMsg(MsgUtil.ALL_OK, MsgUtil.ALL_OK_MSG, jsonObject, request);</b>
+<i>67</i>&nbsp;
+<b class="fc"><i>68</i>&nbsp;        return msg;</b>
+<i>69</i>&nbsp;    }
+<i>70</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-09-11 15:21</div>
+</div>
+</body>
+</html>

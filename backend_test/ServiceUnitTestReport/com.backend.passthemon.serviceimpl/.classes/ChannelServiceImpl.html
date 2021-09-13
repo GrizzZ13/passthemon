@@ -1,0 +1,147 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ChannelServiceImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.backend.passthemon.serviceimpl</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ChannelServiceImpl (com.backend.passthemon.serviceimpl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChannelServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (18/ 18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package com.backend.passthemon.serviceimpl;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import com.backend.passthemon.entity.Channel;
+<i>4</i>&nbsp;import com.backend.passthemon.entity.User;
+<i>5</i>&nbsp;import com.backend.passthemon.repository.ChannelRepository;
+<i>6</i>&nbsp;import com.backend.passthemon.repository.UserRepository;
+<i>7</i>&nbsp;import com.backend.passthemon.service.ChannelService;
+<i>8</i>&nbsp;import lombok.extern.slf4j.Slf4j;
+<i>9</i>&nbsp;import org.hibernate.Hibernate;
+<i>10</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>11</i>&nbsp;import org.springframework.cache.annotation.Cacheable;
+<i>12</i>&nbsp;import org.springframework.stereotype.Service;
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;import java.util.List;
+<i>15</i>&nbsp;
+<b class="fc"><i>16</i>&nbsp;@Slf4j</b>
+<i>17</i>&nbsp;@Service
+<b class="fc"><i>18</i>&nbsp;public class ChannelServiceImpl implements ChannelService {</b>
+<i>19</i>&nbsp;    @Autowired
+<i>20</i>&nbsp;    ChannelRepository channelRepository;
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;    @Autowired
+<i>23</i>&nbsp;    UserRepository userRepository;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    @Override
+<i>26</i>&nbsp;    public Channel save(Channel channel) {
+<b class="fc"><i>27</i>&nbsp;        return channelRepository.save(channel);</b>
+<i>28</i>&nbsp;    }
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;    @Override
+<i>31</i>&nbsp;    public Channel getChannelByAuthorAndRecipient(User author, User recipient) {
+<b class="fc"><i>32</i>&nbsp;        return channelRepository.getChannelByAuthorAndRecipient(author, recipient);</b>
+<i>33</i>&nbsp;    }
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;    @Override
+<i>36</i>&nbsp;    @Cacheable(value = &quot;channel&quot;, key = &quot;#author + &#39;-&#39; + #recipient&quot;, unless = &quot;#result==null&quot;)
+<i>37</i>&nbsp;    public Integer getChannelIdByAuthorAndRecipient(Integer author, Integer recipient) {
+<b class="fc"><i>38</i>&nbsp;        log.info(&quot;[Channel Service] : get channel id by two user id, database operation&quot;);</b>
+<b class="fc"><i>39</i>&nbsp;        Channel channel = channelRepository.getChannelByAuthorAndRecipient(new User(author), new User(recipient));</b>
+<b class="fc"><i>40</i>&nbsp;        if (channel==null)</b>
+<b class="fc"><i>41</i>&nbsp;            return null;</b>
+<i>42</i>&nbsp;        else
+<b class="fc"><i>43</i>&nbsp;            return channel.getId();</b>
+<i>44</i>&nbsp;    }
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    @Override
+<i>47</i>&nbsp;    public List&lt;Channel&gt; getChannelsByAuthor(User user) {
+<b class="fc"><i>48</i>&nbsp;        return channelRepository.getChannelsByAuthor(user);</b>
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    @Override
+<i>52</i>&nbsp;    @Cacheable(value = &quot;channel&quot;, key = &quot;#userid_1 + &#39;-&#39; + #userid_2&quot;)
+<i>53</i>&nbsp;    public Integer newChannel(Integer userid_1, Integer userid_2) {
+<b class="fc"><i>54</i>&nbsp;        User user1 = new User(userid_1);</b>
+<b class="fc"><i>55</i>&nbsp;        User user2 = new User(userid_2);</b>
+<b class="fc"><i>56</i>&nbsp;        Channel channel = channelRepository.getChannelByAuthorAndRecipient(user1, user2);</b>
+<b class="fc"><i>57</i>&nbsp;        if(channel==null) {</b>
+<b class="fc"><i>58</i>&nbsp;            channel = new Channel(userid_1, userid_2);</b>
+<b class="fc"><i>59</i>&nbsp;            channel = channelRepository.save(channel);</b>
+<i>60</i>&nbsp;        }
+<b class="fc"><i>61</i>&nbsp;        log.info(&quot;[Channel Service] : inner newChannel method invoked&quot;);</b>
+<b class="fc"><i>62</i>&nbsp;        return channel.getId();</b>
+<i>63</i>&nbsp;    }
+<i>64</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-09-11 15:24</div>
+</div>
+</body>
+</html>

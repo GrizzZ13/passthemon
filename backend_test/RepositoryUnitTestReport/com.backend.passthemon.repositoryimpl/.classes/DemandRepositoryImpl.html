@@ -1,0 +1,180 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DemandRepositoryImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.backend.passthemon.repositoryimpl</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DemandRepositoryImpl (com.backend.passthemon.repositoryimpl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DemandRepositoryImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (40/ 40)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package com.backend.passthemon.repositoryimpl;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import com.backend.passthemon.dao.DemandDao;
+<i>4</i>&nbsp;import com.backend.passthemon.dto.DemandInfoDto;
+<i>5</i>&nbsp;import com.backend.passthemon.entity.Demand;
+<i>6</i>&nbsp;import com.backend.passthemon.entity.User;
+<i>7</i>&nbsp;import com.backend.passthemon.repository.DemandRepository;
+<i>8</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>9</i>&nbsp;import org.springframework.data.domain.Page;
+<i>10</i>&nbsp;import org.springframework.data.domain.PageRequest;
+<i>11</i>&nbsp;import org.springframework.data.domain.Pageable;
+<i>12</i>&nbsp;import org.springframework.data.domain.Sort;
+<i>13</i>&nbsp;import org.springframework.stereotype.Repository;
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;import java.util.ArrayList;
+<i>16</i>&nbsp;import java.util.List;
+<i>17</i>&nbsp;
+<i>18</i>&nbsp;import static com.backend.passthemon.constant.GoodsConstant.*;
+<i>19</i>&nbsp;import static com.backend.passthemon.constant.GoodsConstant.BEING_AUDITED;
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;@Repository
+<b class="fc"><i>22</i>&nbsp;public class DemandRepositoryImpl implements DemandRepository {</b>
+<i>23</i>&nbsp;    @Autowired
+<i>24</i>&nbsp;    DemandDao demandDao;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;    @Override
+<i>27</i>&nbsp;    public Integer addDemand(Demand demand){
+<b class="fc"><i>28</i>&nbsp;        Demand result=demandDao.saveAndFlush(demand);</b>
+<b class="fc"><i>29</i>&nbsp;        return result.getId();</b>
+<i>30</i>&nbsp;    }
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;    @Override
+<i>33</i>&nbsp;    public List&lt;Demand&gt; listAllDemandsByPage(Integer fetchPage, Integer category, Integer attrition){
+<b class="fc"><i>34</i>&nbsp;        Pageable pageable = PageRequest.of(fetchPage, 8, Sort.Direction.DESC, &quot;upLoadTime&quot;);</b>
+<i>35</i>&nbsp;        Page&lt;Demand&gt; demandPage;
+<b class="fc"><i>36</i>&nbsp;        if(category == 0 &amp;&amp; attrition == 0){</b>
+<b class="fc"><i>37</i>&nbsp;            demandPage = demandDao.findAllByState(1, pageable);;</b>
+<i>38</i>&nbsp;        }
+<i>39</i>&nbsp;        else{
+<b class="fc"><i>40</i>&nbsp;            if(category != 0 &amp;&amp; attrition == 0){</b>
+<b class="fc"><i>41</i>&nbsp;                demandPage = demandDao.findAllByStateAndCategory(1, category, pageable);</b>
+<i>42</i>&nbsp;            }
+<i>43</i>&nbsp;            else{
+<b class="fc"><i>44</i>&nbsp;                if(category == 0){</b>
+<b class="fc"><i>45</i>&nbsp;                    demandPage = demandDao.findAllByStateAndAttrition( 1, attrition, pageable);</b>
+<i>46</i>&nbsp;                }
+<i>47</i>&nbsp;                else{
+<b class="fc"><i>48</i>&nbsp;                    demandPage= demandDao.findAllByStateAndAttritionAndCategory(1, attrition, category, pageable);</b>
+<i>49</i>&nbsp;                }
+<i>50</i>&nbsp;            }
+<i>51</i>&nbsp;        }
+<b class="fc"><i>52</i>&nbsp;        List&lt;Demand&gt; result = demandPage.getContent();</b>
+<i>53</i>&nbsp;
+<b class="fc"><i>54</i>&nbsp;        return result;</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    @Override
+<i>58</i>&nbsp;    public List&lt;Demand&gt; listOnesDemandsByPage(Integer fetchPage, User user){
+<b class="fc"><i>59</i>&nbsp;        Pageable pageable = PageRequest.of(fetchPage, 8, Sort.Direction.DESC, &quot;upLoadTime&quot;);</b>
+<b class="fc"><i>60</i>&nbsp;        List&lt;Integer&gt; stateList = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>61</i>&nbsp;        stateList.add(IMAGE_FAILED_AUDIT);</b>
+<b class="fc"><i>62</i>&nbsp;        stateList.add(TEXT_FAILED_AUDIT);</b>
+<b class="fc"><i>63</i>&nbsp;        stateList.add(ON_SALE);</b>
+<b class="fc"><i>64</i>&nbsp;        stateList.add(BEING_AUDITED);</b>
+<b class="fc"><i>65</i>&nbsp;        Page&lt;Demand&gt; demandPage = demandDao.findAllByUserAndStateIn(pageable, user, stateList);</b>
+<b class="fc"><i>66</i>&nbsp;        List&lt;Demand&gt; result = demandPage.getContent();</b>
+<i>67</i>&nbsp;
+<b class="fc"><i>68</i>&nbsp;        return result;</b>
+<i>69</i>&nbsp;    }
+<i>70</i>&nbsp;    @Override
+<i>71</i>&nbsp;    public Demand getDemandById(Integer demandId){
+<b class="fc"><i>72</i>&nbsp;        return demandDao.findDemandById(demandId);</b>
+<i>73</i>&nbsp;    }
+<i>74</i>&nbsp;    @Override
+<i>75</i>&nbsp;    public void editDemand(DemandInfoDto demandInfoDto){
+<b class="fc"><i>76</i>&nbsp;        Demand demand=demandDao.findDemandById(demandInfoDto.getDemandId());</b>
+<b class="fc"><i>77</i>&nbsp;        demand.setName(demandInfoDto.getName());</b>
+<b class="fc"><i>78</i>&nbsp;        demand.setNum(demandInfoDto.getNum());</b>
+<b class="fc"><i>79</i>&nbsp;        demand.setDescription(demandInfoDto.getDescription());</b>
+<b class="fc"><i>80</i>&nbsp;        demand.setIdealPrice(demandInfoDto.getIdealPrice());</b>
+<b class="fc"><i>81</i>&nbsp;        demand.setCategory(demandInfoDto.getCategory());</b>
+<b class="fc"><i>82</i>&nbsp;        demand.setAttrition(demandInfoDto.getAttrition());</b>
+<b class="fc"><i>83</i>&nbsp;        demandDao.saveAndFlush(demand);</b>
+<b class="fc"><i>84</i>&nbsp;    }</b>
+<i>85</i>&nbsp;    @Override
+<i>86</i>&nbsp;    public  void removeDemand(Integer demandId){
+<b class="fc"><i>87</i>&nbsp;        Demand demand=demandDao.findDemandById(demandId);</b>
+<b class="fc"><i>88</i>&nbsp;        demand.setState(0);</b>
+<b class="fc"><i>89</i>&nbsp;        demandDao.saveAndFlush(demand);</b>
+<b class="fc"><i>90</i>&nbsp;    }</b>
+<i>91</i>&nbsp;    @Override
+<i>92</i>&nbsp;    public  void changeState(Integer demandId,Integer state){
+<b class="fc"><i>93</i>&nbsp;        Demand demand=demandDao.findDemandById(demandId);</b>
+<b class="fc"><i>94</i>&nbsp;        demand.setState(state);</b>
+<b class="fc"><i>95</i>&nbsp;        demandDao.saveAndFlush(demand);</b>
+<b class="fc"><i>96</i>&nbsp;    }</b>
+<i>97</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-09-11 15:23</div>
+</div>
+</body>
+</html>
