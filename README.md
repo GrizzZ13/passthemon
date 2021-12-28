@@ -1,4 +1,8 @@
 ## 小学期项目
+### 项目成员及导师
+* 成员: [Wang Haotian](https://github.com/GrizzZ13) , [Tao Yucheng](https://github.com/tao011110) , [Zhou Yuhong](https://github.com/Zhou-Yuhong) , [Xu Huidong](https://github.com/WilliamX1)
+* 助教: **ys**
+* 老师: **sbj rr**
 ### 项目简介
 * 面向校园: 仅限交大师生注册使用。
 * 自由交易: 用户可以发布商品、需求、查看商品、需求，用户间可以自由聊天。
@@ -36,7 +40,3 @@
 通过令牌桶 + 自定义注解实现接口的总限流，通过Redis + 自定义注解实现单个用户对接口的限流。
 #### 管理员界面
 用React编写管理员界面，配合Spring-boot-admin实现后台监控。
-### 项目成员及导师
-* 成员: **wht tyc zyh xhd**
-* 助教: **ys**
-* 老师: **sbj rr**
